@@ -178,13 +178,13 @@ class TestChange(unittest.TestCase):
         Tests change of unweighted graph.
         Eventually, every initial edge should become nonedge, and vice-versa.
         """
-        adjacency_list = [{1: 8, 5: 4, 6: 1},
-                          {0: 8, 2: 2, 5: 7, 6: 6},
-                          {1: 2, 5: 3},
-                          {6: 5},
+        adjacency_list = [{1: 1, 5: 1, 6: 1},
+                          {0: 1, 2: 1, 5: 1, 6: 1},
+                          {1: 1, 5: 1},
+                          {6: 1},
                           {},
-                          {0: 4, 1: 7, 2: 3},
-                          {0: 1, 1: 6, 3: 5}]
+                          {0: 1, 1: 1, 2: 1},
+                          {0: 1, 1: 1, 3: 1}]
         initial_adjacency_matrix = [[0,1,0,0,0,1,1],
                                     [1,0,1,0,0,1,1],
                                     [0,1,0,0,0,1,0],
@@ -262,6 +262,121 @@ class TestChange(unittest.TestCase):
             if changes_left == 0:
                 break
         self.assertEqual(changes_left, 0)
+
+class TestValidate(unittest.TestCase):
+    def test_validate_unweighted_wrong_structure(self):
+        """
+        Checks whether path validation function discards paths with the wrong structure.
+        """
+        adjacency_list = [{1: 1, 5: 1, 6: 1},
+                        {0: 1, 2: 1, 5: 1, 6: 1},
+                        {1: 1, 5: 1},
+                        {6: 1},
+                        {},
+                        {0: 1, 1: 1, 2: 1},
+                        {0: 1, 1: 1, 3: 1}]
+        n = len(adjacency_list)
+        m = 8
+        graph = UnweightedGraph(0, n, m)
+        graph.adjacency_list = adjacency_list
+        self.assertEqual(graph.validate([1, 6]), -1)  # first vertex should be 0
+        self.assertEqual(graph.validate([0, 5]), -1)  # last vertex should be n
+        self.assertEqual(graph.validate([0, 1, 1, 6]), -1)  # no repeated vertices are allowed
+        self.assertEqual(graph.validate([0, -1, 6]), -1)  # no negative vertice values
+        self.assertEqual(graph.validate([0, 7, 6]), -1)  # no vertice values >= n
+        self.assertEqual(graph.validate([5, 0, 6]), -1)
+        self.assertEqual(graph.validate([0, 6, 3]), -1)
+        self.assertEqual(graph.validate([6, 0]), -1)
+        self.assertEqual(graph.validate([0, 6, 0, 6]), -1)
+
+    
+    def test_validate_unweighted_invalid_existing_path(self):
+        """
+        Checks whether path validation function correctly classifies given paths as incorrect.
+        """
+        adjacency_list = [{1: 1, 5: 1, 6: 1},
+                        {0: 1, 2: 1, 5: 1, 6: 1},
+                        {1: 1, 5: 1},
+                        {6: 1},
+                        {},
+                        {0: 1, 1: 1, 2: 1},
+                        {0: 1, 1: 1, 3: 1}]
+        n = len(adjacency_list)
+        m = 8
+        graph = UnweightedGraph(0, n, m)
+        graph.adjacency_list = adjacency_list
+        self.assertEqual(graph.validate([0, 5, 2, 6]), 0)
+        self.assertEqual(graph.validate([0, 1, 3, 6]), 0)
+        self.assertEqual(graph.validate([0, 5, 2, 3, 6]), 0)
+        self.assertEqual(graph.validate([0, 4, 6]), 0)
+
+    
+    def test_validate_unweighted_invalid_empty_path(self):
+        """
+        Checks whether path validation function does not accept an empty list when there is a path between start and end vertices.
+        """
+        adjacency_list = [{1: 1, 5: 1, 6: 1},
+                        {0: 1, 2: 1, 5: 1, 6: 1},
+                        {1: 1, 5: 1},
+                        {6: 1},
+                        {},
+                        {0: 1, 1: 1, 2: 1},
+                        {0: 1, 1: 1, 3: 1}]
+        n = len(adjacency_list)
+        m = 8
+        graph = UnweightedGraph(0, n, m)
+        graph.adjacency_list = adjacency_list
+        self.assertEqual(graph.validate([]), 0)
+
+
+    def test_validate_unweighted_valid_existing_path(self):
+        """
+        Checks whether path validation function correctly validates an existing path between start and end vertex.
+        """
+        adjacency_list = [{1: 1, 5: 1, 6: 1},
+                        {0: 1, 2: 1, 5: 1, 6: 1},
+                        {1: 1, 5: 1},
+                        {6: 1},
+                        {},
+                        {0: 1, 1: 1, 2: 1},
+                        {0: 1, 1: 1, 3: 1}]
+        n = len(adjacency_list)
+        m = 8
+        graph = UnweightedGraph(0, n, m)
+        graph.adjacency_list = adjacency_list
+        self.assertEqual(graph.validate([0, 6]), 1)
+        self.assertEqual(graph.validate([0, 1, 6]), 1)
+        self.assertEqual(graph.validate([0, 5, 1, 6]), 1)
+        self.assertEqual(graph.validate([0, 5, 2, 1, 6]), 1)
+    
+    def test_validate_unweighted_valid_empty_path(self):
+        """
+        Checks whether path validation function accepts an empty list when there is no path between start and end vertex.
+        """
+        adjacency_list = [{1: 1, 5: 1},
+                        {0: 1, 5: 1},
+                        {6: 1},
+                        {5: 1},
+                        {},
+                        {0: 1, 1: 1, 3: 1},
+                        {2: 1}]
+        n = len(adjacency_list)
+        m = 5
+        graph = UnweightedGraph(0, n, m)
+        graph.adjacency_list = adjacency_list
+        self.assertEqual(graph.validate([]), 1)
+        adjacency_list = [{1: 1, 3: 1, 5: 1},
+                        {0: 1, 3: 1, 5: 1},
+                        {6: 1, 4: 1},
+                        {0: 1, 3: 1, 5: 1},
+                        {2: 1, 6: 1},
+                        {0: 1, 1: 1, 3: 1},
+                        {2: 1, 4: 1}]
+        n = len(adjacency_list)
+        m = 9
+        graph = UnweightedGraph(0, n, m)
+        graph.adjacency_list = adjacency_list
+        self.assertEqual(graph.validate([]), 1)
 
 if __name__ == '__main__':
     unittest.main()
