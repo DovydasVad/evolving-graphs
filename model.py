@@ -4,6 +4,33 @@ import random
 class Graph:
     n: int
     m: int
+
+    def __init__(self, rand_seed, n, *args):
+        random.seed(rand_seed)
+        self.n = n
+        self.init_specific(*args)
+        self.construct_random_graph()
+
+    def init_specific(self):
+        pass
+    
+    def construct_random_graph(self):
+        pass
+
+    def probe(self):
+        pass
+
+    def change(self):
+        pass
+
+    def validate(self):
+        pass
+
+
+
+class GraphOld:
+    n: int
+    m: int
     weighted: bool
 
     def __init__(self, n, m, rand_seed, weighted = False):
@@ -45,7 +72,7 @@ class Graph:
     def probe(self, *args):
         return self.probe_unweighted(*args) if not self.weighted else self.probe_weighted(*args)
 
-    """"Returns set of neighbors of v"""
+    """Returns set of neighbors of v"""
     def probe_unweighted(self, v):
         return set(self.adjacency_list[v])
     
