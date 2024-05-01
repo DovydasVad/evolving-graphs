@@ -102,9 +102,9 @@ class TestProbe(unittest.TestCase):
         """
         Tests probing of a small fixed unweighted graph. Each probe should return return True if w1 < w2, and False otherwise.
         """
-        adjacency_matrix = [[0, 7, 5, 1, 8],
-                            [7, 0, 4, 2, 6],
-                            [5, 4, 0, 10,3],
+        adjacency_matrix = [[0, 4, 5, 1, 8],
+                            [4, 0, 7, 2, 6],
+                            [5, 7, 0, 10,3],
                             [1, 2, 10,0, 9],
                             [8, 6, 3, 9, 0]]
         n = len(adjacency_matrix)
@@ -305,10 +305,10 @@ class TestValidate(unittest.TestCase):
         m = 8
         graph = UnweightedGraph(0, n, m)
         graph.adjacency_list = adjacency_list
-        self.assertEqual(graph.validate([0, 5, 2, 6]), 0)
-        self.assertEqual(graph.validate([0, 1, 3, 6]), 0)
-        self.assertEqual(graph.validate([0, 5, 2, 3, 6]), 0)
-        self.assertEqual(graph.validate([0, 4, 6]), 0)
+        self.assertEqual(graph.validate([0, 5, 2, 6]), 1)
+        self.assertEqual(graph.validate([0, 1, 3, 6]), 1)
+        self.assertEqual(graph.validate([0, 5, 2, 3, 6]), 1)
+        self.assertEqual(graph.validate([0, 4, 6]), 1)
 
     
     def test_validate_unweighted_invalid_empty_path(self):
@@ -326,7 +326,7 @@ class TestValidate(unittest.TestCase):
         m = 8
         graph = UnweightedGraph(0, n, m)
         graph.adjacency_list = adjacency_list
-        self.assertEqual(graph.validate([]), 0)
+        self.assertEqual(graph.validate([]), 1)
 
 
     def test_validate_unweighted_valid_existing_path(self):
@@ -344,10 +344,10 @@ class TestValidate(unittest.TestCase):
         m = 8
         graph = UnweightedGraph(0, n, m)
         graph.adjacency_list = adjacency_list
-        self.assertEqual(graph.validate([0, 6]), 1)
-        self.assertEqual(graph.validate([0, 1, 6]), 1)
-        self.assertEqual(graph.validate([0, 5, 1, 6]), 1)
-        self.assertEqual(graph.validate([0, 5, 2, 1, 6]), 1)
+        self.assertEqual(graph.validate([0, 6]), 0)
+        self.assertEqual(graph.validate([0, 1, 6]), 0)
+        self.assertEqual(graph.validate([0, 5, 1, 6]), 0)
+        self.assertEqual(graph.validate([0, 5, 2, 1, 6]), 0)
     
     def test_validate_unweighted_valid_empty_path(self):
         """
@@ -364,7 +364,7 @@ class TestValidate(unittest.TestCase):
         m = 5
         graph = UnweightedGraph(0, n, m)
         graph.adjacency_list = adjacency_list
-        self.assertEqual(graph.validate([]), 1)
+        self.assertEqual(graph.validate([]), 0)
         adjacency_list = [{1: 1, 3: 1, 5: 1},
                         {0: 1, 3: 1, 5: 1},
                         {6: 1, 4: 1},
@@ -376,7 +376,58 @@ class TestValidate(unittest.TestCase):
         m = 9
         graph = UnweightedGraph(0, n, m)
         graph.adjacency_list = adjacency_list
-        self.assertEqual(graph.validate([]), 1)
+        self.assertEqual(graph.validate([]), 0)
+
+    def test_validate_weighted_wrong_structure(self):
+        """
+        Tests whether MST validation function rejects edge list that does not result in a tree.
+        """
+        adjacency_matrix = [[0, 4, 5, 1, 8],
+                            [4, 0, 7, 2, 6],
+                            [5, 7, 0, 10,3],
+                            [1, 2, 10,0, 9],
+                            [8, 6, 3, 9, 0]]
+        n = len(adjacency_matrix)
+        graph = WeightedGraph(0, n)
+        graph.adjacency_matrix = adjacency_matrix
+        for v in range(n):
+            for v2 in range(v):
+                w = adjacency_matrix[v][v2]
+                graph.weights_to_edges[w] = (v2, v)
+        self.assertEqual(graph.validate([]), -1)
+        self.assertEqual(graph.validate([(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]), -1)
+        self.assertEqual(graph.validate([(0, 1), (0, 2), (0, 3), (0, 3)]), -1)
+        self.assertEqual(graph.validate([(0, 1), (0, 2), (0, -1), (0, 3)]), -1)
+        self.assertEqual(graph.validate([(0, 1), (0, 2), (0, 5), (0, 4)]), -1)
+        self.assertEqual(graph.validate([(0, 1), (0, 2), (-1, 0), (0, 3)]), -1)
+        self.assertEqual(graph.validate([(0, 1), (0, 2), (5, 0), (0, 4)]), -1)
+        self.assertEqual(graph.validate([(0, 1), (0, 2), (1, 2), (3, 4)]), -1)
+        self.assertEqual(graph.validate([(0, 2), (2, 3), (3, 3), (3, 4)]), -1)
+
+    def test_validate_weighted_mst(self):
+        """
+        Tests whether MST validation function rejects edge list that does not result in a tree.
+        """
+        adjacency_matrix = [[0, 4, 5, 1, 8],
+                            [4, 0, 7, 2, 6],
+                            [5, 7, 0, 10,3],
+                            [1, 2, 10,0, 9],
+                            [8, 6, 3, 9, 0]]
+        n = len(adjacency_matrix)
+        graph = WeightedGraph(0, n)
+        graph.adjacency_matrix = adjacency_matrix
+        for v in range(n):
+            for v2 in range(v):
+                w = adjacency_matrix[v][v2]
+                graph.weights_to_edges[w] = (v2, v)
+        self.assertEqual(graph.validate([(0, 2), (0, 3), (1, 3), (2, 4)]), 0)
+        self.assertEqual(graph.validate([(0, 2), (3, 0), (1, 3), (4, 2)]), 0)
+        self.assertEqual(graph.validate([(0, 3), (0, 2), (2, 4), (1, 3)]), 0)
+        self.assertEqual(graph.validate([(0, 1), (0, 2), (0, 3), (0, 4)]), 7)
+        self.assertEqual(graph.validate([(0, 1), (1, 2), (2, 3), (3, 4)]), 19)
+        self.assertEqual(graph.validate([(0, 4), (4, 2), (2, 3), (3, 1)]), 12)
+
+
 
 if __name__ == '__main__':
     unittest.main()

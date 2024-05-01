@@ -64,8 +64,8 @@ class UnweightedGraph(Graph):
         """
         Checks whether the answer of path from path_v1 to path_v2 is valid in the current state of the graph.
         If path does not follow the right structure, returns -1
-        If the answer is invalid, returns 0
-        If the answer is valid, returns 1
+        If the answer is invalid, returns 1
+        If the answer is valid, returns 0
 
         The answer is valid if one of the conditions holds:
             1) path = [], and start and end vertices are not connected
@@ -86,16 +86,15 @@ class UnweightedGraph(Graph):
             visited = [0 for i in range(self.n)]
             visited[0] = 1
             new_vertices = [0]
-            for i in range(len(new_vertices)):
-                for v in self.adjacency_list[new_vertices[i]]:
-                    if visited[v] == 0:
-                        visited[v] = 1
-                        new_vertices.append(v)
-                        if v == self.n - 1:
-                            return 0
-            print(new_vertices)
-        else:                  # Case 2: path != []
+            for v in new_vertices:
+                for v2 in self.adjacency_list[v]:
+                    if visited[v2] == 0:
+                        visited[v2] = 1
+                        new_vertices.append(v2)
+                        if v2 == self.n - 1:
+                            return 1
+        else:    # Case 2: path != []
             for i in range(0, len(path)-1):
                 if path[i+1] not in self.adjacency_list[path[i]]:
-                    return 0
-        return 1
+                    return 1
+        return 0
