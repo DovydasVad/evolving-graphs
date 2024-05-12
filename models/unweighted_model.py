@@ -3,10 +3,7 @@ import random
 import os
 import sys
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
-from model import Graph
+from models.model import Graph
 
 class UnweightedGraph(Graph):
 
@@ -42,7 +39,7 @@ class UnweightedGraph(Graph):
                 self.adjacency_list[v2].add(v)
 
     def probe(self, v):
-        return set(self.adjacency_list[v])
+        return self.adjacency_list[v]
     
     def change(self):
         edge_found = False

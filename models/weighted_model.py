@@ -1,6 +1,6 @@
 import random
 
-from model import Graph
+from models.model import Graph
 
 class WeightedGraph(Graph):
 

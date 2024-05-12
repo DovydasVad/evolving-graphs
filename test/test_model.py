@@ -1,13 +1,11 @@
 import copy
 import unittest
-import os
 import sys
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+sys.path.append("..")
 
-from unweighted_model import UnweightedGraph
-from weighted_model import WeightedGraph
+from models.unweighted_model import UnweightedGraph
+from models.weighted_model import WeightedGraph
 
 class TestGeneration(unittest.TestCase):
     def test_interesting_range_check_unweighted(self):
