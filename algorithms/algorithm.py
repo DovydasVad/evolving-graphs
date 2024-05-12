@@ -5,5 +5,8 @@ class Algorithm:
     def get_probe_input(self):
         pass
 
-    def answer(self, probe_result):
+    def set_probe_result(self, probe_result):
+        pass
+
+    def answer(self):
         pass
