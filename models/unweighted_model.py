@@ -1,5 +1,10 @@
 import math
 import random
+import os
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from model import Graph
 
@@ -7,7 +12,7 @@ class UnweightedGraph(Graph):
 
     def init_specific(self, m):
         self.m = m
-        self.adjacency_list = [dict() for v in range(self.n)]
+        self.adjacency_list = [set() for _ in range(self.n)]
         self.interesting_range_check()
         self.start_vertex = 0
         self.end_vertex = self.n - 1
@@ -33,8 +38,8 @@ class UnweightedGraph(Graph):
                 if v == v2 or v2 in self.adjacency_list[v]:
                     continue
                 non_edge_found = True
-                self.adjacency_list[v][v2] = 1
-                self.adjacency_list[v2][v] = 1
+                self.adjacency_list[v].add(v2)
+                self.adjacency_list[v2].add(v)
 
     def probe(self, v):
         return set(self.adjacency_list[v])
@@ -55,10 +60,10 @@ class UnweightedGraph(Graph):
             if v4 not in self.adjacency_list[v3] and v3 != v4:
                 nonedge_found = True
         
-        del self.adjacency_list[v1][v2]
-        del self.adjacency_list[v2][v1]
-        self.adjacency_list[v3][v4] = 1
-        self.adjacency_list[v4][v3] = 1
+        self.adjacency_list[v1].remove(v2)
+        self.adjacency_list[v2].remove(v1)
+        self.adjacency_list[v3].add(v4)
+        self.adjacency_list[v4].add(v3)
 
     def validate(self, path):
         """

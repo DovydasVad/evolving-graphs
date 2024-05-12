@@ -1,5 +1,10 @@
 import copy
 import unittest
+import os
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from unweighted_model import UnweightedGraph
 from weighted_model import WeightedGraph
@@ -33,11 +38,11 @@ class TestGeneration(unittest.TestCase):
         for v in range(n):
             edge_count += len(graph.adjacency_list[v])
             vertices = set()
-            for v2 in graph.adjacency_list[v].keys():
+            for v2 in graph.adjacency_list[v]:
                 self.assertLess(-1, v2)
                 self.assertLess(v2, n)
                 self.assertFalse(v2 in vertices)
-                self.assertEqual(graph.adjacency_list[v][v2], 1)
+                self.assertTrue(v2 in graph.adjacency_list[v])
                 vertices.add(v2)
         self.assertEqual(edge_count / 2, m)
 
@@ -56,7 +61,7 @@ class TestGeneration(unittest.TestCase):
             self.assertEqual(len(graph.adjacency_matrix[v]), n)
             for v2 in range(n):
                 if v == v2:
-                    self.assertEqual(graph.adjacency_matrix[v][v2], 0)
+                    self.assertFalse(graph.adjacency_matrix[v][v2], 0)
                 else:
                     w = graph.adjacency_matrix[v][v2]
                     self.assertLess(0, w)
@@ -74,18 +79,18 @@ class TestProbe(unittest.TestCase):
         """
         Tests probing of a small fixed unweighted graph. Each probe should return list of neighbors of v.
         """
-        adjacency_list = [{1: 1, 5: 1, 6: 1},
-                          {0: 1, 2: 1, 5: 1, 6: 1},
-                          {1: 1, 5: 1},
-                          {6: 1},
-                          {},
-                          {0: 1, 1: 1, 2: 1},
-                          {0: 1, 1: 1, 3: 6}]
+        adjacency_list = [set([1, 5, 6]),
+                          set([0, 2, 5, 6]),
+                          set([1, 5]),
+                          set([6]),
+                          set([]),
+                          set([0, 1, 2]),
+                          set([0, 1, 3])]
         n = len(adjacency_list)
         graph = UnweightedGraph(0, n, 8)
         graph.adjacency_list = adjacency_list
         for v in range(n):
-            self.assertSetEqual(set(adjacency_list[v].keys()), graph.probe(v))
+            self.assertSetEqual(adjacency_list[v], graph.probe(v))
     
     def test_probe_unweighted_2(self):
         """
@@ -95,7 +100,7 @@ class TestProbe(unittest.TestCase):
         m = 3007
         graph = UnweightedGraph(0, n, m)
         for v in range(n):
-            neighbors_v = set(graph.adjacency_list[v].keys())
+            neighbors_v = graph.adjacency_list[v]
             self.assertSetEqual(neighbors_v, graph.probe(v))
 
     def test_probe_weighted(self):
@@ -131,11 +136,11 @@ def num_changes(adj_list1, adj_list2):
     n = len(adj_list1)
     changes = 0
     for v in range(n):
-        for v2 in adj_list1[v].keys():
+        for v2 in adj_list1[v]:
             if v2 not in adj_list2[v]:
                 changes += 1
     for v in range(n):
-        for v2 in adj_list2[v].keys():
+        for v2 in adj_list2[v]:
             if v2 not in adj_list1[v]:
                 changes += 1
     return changes / 2
@@ -178,13 +183,13 @@ class TestChange(unittest.TestCase):
         Tests change of unweighted graph.
         Eventually, every initial edge should become nonedge, and vice-versa.
         """
-        adjacency_list = [{1: 1, 5: 1, 6: 1},
-                          {0: 1, 2: 1, 5: 1, 6: 1},
-                          {1: 1, 5: 1},
-                          {6: 1},
-                          {},
-                          {0: 1, 1: 1, 2: 1},
-                          {0: 1, 1: 1, 3: 1}]
+        adjacency_list = [set([1, 5, 6]),
+                          set([0, 2, 5, 6]),
+                          set([1, 5]),
+                          set([6]),
+                          set([]),
+                          set([0, 1, 2]),
+                          set([0, 1, 3])]
         initial_adjacency_matrix = [[0,1,0,0,0,1,1],
                                     [1,0,1,0,0,1,1],
                                     [0,1,0,0,0,1,0],
@@ -268,13 +273,13 @@ class TestValidate(unittest.TestCase):
         """
         Checks whether path validation function discards paths with the wrong structure.
         """
-        adjacency_list = [{1: 1, 5: 1, 6: 1},
-                        {0: 1, 2: 1, 5: 1, 6: 1},
-                        {1: 1, 5: 1},
-                        {6: 1},
-                        {},
-                        {0: 1, 1: 1, 2: 1},
-                        {0: 1, 1: 1, 3: 1}]
+        adjacency_list = [set([1, 5, 6]),
+                        set([0, 2, 5, 6]),
+                        set([1, 5]),
+                        set([6]),
+                        set([]),
+                        set([0, 1, 2]),
+                        set([0, 1, 3])]
         n = len(adjacency_list)
         m = 8
         graph = UnweightedGraph(0, n, m)
@@ -294,13 +299,13 @@ class TestValidate(unittest.TestCase):
         """
         Checks whether path validation function correctly classifies given paths as incorrect.
         """
-        adjacency_list = [{1: 1, 5: 1, 6: 1},
-                        {0: 1, 2: 1, 5: 1, 6: 1},
-                        {1: 1, 5: 1},
-                        {6: 1},
-                        {},
-                        {0: 1, 1: 1, 2: 1},
-                        {0: 1, 1: 1, 3: 1}]
+        adjacency_list = [set([1, 5, 6]),
+                          set([0, 2, 5, 6]),
+                          set([1, 5]),
+                          set([6]),
+                          set([]),
+                          set([0, 1, 2]),
+                          set([0, 1, 3])]
         n = len(adjacency_list)
         m = 8
         graph = UnweightedGraph(0, n, m)
@@ -315,13 +320,13 @@ class TestValidate(unittest.TestCase):
         """
         Checks whether path validation function does not accept an empty list when there is a path between start and end vertices.
         """
-        adjacency_list = [{1: 1, 5: 1, 6: 1},
-                        {0: 1, 2: 1, 5: 1, 6: 1},
-                        {1: 1, 5: 1},
-                        {6: 1},
-                        {},
-                        {0: 1, 1: 1, 2: 1},
-                        {0: 1, 1: 1, 3: 1}]
+        adjacency_list = [set([1, 5, 6]),
+                          set([0, 2, 5, 6]),
+                          set([1, 5]),
+                          set([6]),
+                          set([]),
+                          set([0, 1, 2]),
+                          set([0, 1, 3])]
         n = len(adjacency_list)
         m = 8
         graph = UnweightedGraph(0, n, m)
@@ -333,13 +338,13 @@ class TestValidate(unittest.TestCase):
         """
         Checks whether path validation function correctly validates an existing path between start and end vertex.
         """
-        adjacency_list = [{1: 1, 5: 1, 6: 1},
-                        {0: 1, 2: 1, 5: 1, 6: 1},
-                        {1: 1, 5: 1},
-                        {6: 1},
-                        {},
-                        {0: 1, 1: 1, 2: 1},
-                        {0: 1, 1: 1, 3: 1}]
+        adjacency_list = [set([1, 5, 6]),
+                          set([0, 2, 5, 6]),
+                          set([1, 5]),
+                          set([6]),
+                          set([]),
+                          set([0, 1, 2]),
+                          set([0, 1, 3])]
         n = len(adjacency_list)
         m = 8
         graph = UnweightedGraph(0, n, m)
@@ -353,25 +358,25 @@ class TestValidate(unittest.TestCase):
         """
         Checks whether path validation function accepts an empty list when there is no path between start and end vertex.
         """
-        adjacency_list = [{1: 1, 5: 1},
-                        {0: 1, 5: 1},
-                        {6: 1},
-                        {5: 1},
-                        {},
-                        {0: 1, 1: 1, 3: 1},
-                        {2: 1}]
+        adjacency_list = [set([1, 5]),
+                        set([0, 5]),
+                        set([6]),
+                        set([5]),
+                        set([]),
+                        set([0, 1, 3]),
+                        set([2])]
         n = len(adjacency_list)
         m = 5
         graph = UnweightedGraph(0, n, m)
         graph.adjacency_list = adjacency_list
         self.assertEqual(graph.validate([]), 0)
-        adjacency_list = [{1: 1, 3: 1, 5: 1},
-                        {0: 1, 3: 1, 5: 1},
-                        {6: 1, 4: 1},
-                        {0: 1, 3: 1, 5: 1},
-                        {2: 1, 6: 1},
-                        {0: 1, 1: 1, 3: 1},
-                        {2: 1, 4: 1}]
+        adjacency_list = [set([1, 3, 5]),
+                        set([0, 3, 5]),
+                        set([6, 4]),
+                        set([0, 3, 5]),
+                        set([2, 6]),
+                        set([0, 1, 3]),
+                        set([2, 4])]
         n = len(adjacency_list)
         m = 9
         graph = UnweightedGraph(0, n, m)
