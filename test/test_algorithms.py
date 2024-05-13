@@ -19,10 +19,10 @@ def perform_probe(algorithm: AlgorithmOnePath, graph: UnweightedGraph):
 class OnePath(unittest.TestCase):
     def test_one_path_1(self):
         """
-        Solution path has always 4 edges.
+        Solution path has always 5 vertices.
         Solution should be always correct after 2R = 8 probes.
         """
-        n = 10
+        n = 9
         R = 4
         edges = [(0, 1), (0, 3), (1, 3), (0, 4), (2, 4), (2, 6), (6, 5), (6, 8), (5, 8), (7, 8)]
         graph = UnweightedGraph(0, n, len(edges))
@@ -40,52 +40,51 @@ class OnePath(unittest.TestCase):
         for i in range(R):
             v = algorithm.get_probe_input()
             probes_right.add(v)
+            algorithm.set_probe_result(graph.probe(v))
             if i < R - 1:
                 answer = algorithm.answer()
                 self.assertListEqual(answer, [])
                 self.assertTrue(graph.validate(answer) == 1)
             else:
                 answer = algorithm.answer()
-                self.assertTrue(len(answer) == 4)
-                self.assertTrue(graph.validate(algorithm.answer()) == 0)
+                self.assertTrue(len(answer) == 5)
+                self.assertTrue(graph.validate(answer) == 0)
         self.assertSetEqual(probes_right, set([5, 6, 7, 8]))
         for i in range(100):
             perform_probe(algorithm, graph)
             answer = algorithm.answer()
-            self.assertTrue(len(answer) == 4)
-            self.assertTrue(graph.validate(algorithm.answer()) == 0)
+            self.assertTrue(len(answer) == 5)
+            self.assertTrue(graph.validate(answer) == 0)
 
     def test_one_path_2(self):
         """
         Unconnected graph, algorithm outputs empty path as the solution, until the edge connecting the graph is added.
         """
-        n = 10
+        n = 9
         R = 15
         edges = [(0, 1), (0, 3), (1, 3), (0, 4), (2, 4), (6, 5), (6, 8), (5, 8), (7, 8)]
         graph = UnweightedGraph(0, n, len(edges))
         graph.adjacency_list = edges_to_adj_list(edges, n)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
-        probes_left = set()
-        probes_right = set()
         for i in range(100):
             v = algorithm.get_probe_input()
-            probes_left.add(v)
             algorithm.set_probe_result(graph.probe(v))
             answer = algorithm.answer()
             self.assertListEqual(answer, [])
-            self.assertTrue(graph.validate(answer) == 1)
-        self.assertSetEqual(probes_left, set([0, 1, 3, 4]))
+            self.assertTrue(graph.validate(answer) == 0)
+
         graph.adjacency_list[6].add(2)
         graph.adjacency_list[2].add(6)
+        perform_probe(algorithm, graph)
+        self.assertTrue(graph.validate(algorithm.answer()) == 1)
         for i in range(2*R):
             perform_probe(algorithm, graph)
         for i in range(100):
             perform_probe(algorithm, graph)
             answer = algorithm.answer()
-            self.assertTrue(len(answer) == 4)
-            self.assertTrue(graph.validate(algorithm.answer()) == 0)
-
+            self.assertTrue(len(answer) == 5)
+            self.assertTrue(graph.validate(answer) == 0)
 
     def test_one_path_3(self):
         """
@@ -108,12 +107,13 @@ class OnePath(unittest.TestCase):
                 probes_right.add(v)
             algorithm.set_probe_result(graph.probe(v))
             self.assertListEqual(algorithm.answer(), [])
-        self.assertSetEqual(probes_left, set([0, 1]))
+        self.assertSetEqual(probes_left, set([0, 2]))
         self.assertSetEqual(probes_right, set([5, 4]))
     
     def test_one_path_4(self):
         """
         Connected graph (line), and solution exists.
+        Once an edge is removed, solution does not exist anymore.
         """
         n = 6
         R = 3
@@ -133,18 +133,33 @@ class OnePath(unittest.TestCase):
         for i in range(R):
             v = algorithm.get_probe_input()
             probes_right.add(v)
-            if i < R - 2:
+            algorithm.set_probe_result(graph.probe(v))
+            if i < R - 1:
                 self.assertListEqual(algorithm.answer(), [])
             else:
                 answer = algorithm.answer()
-                self.assertTrue(len(answer) == 5)
-                self.assertTrue(graph.validate(algorithm.answer()) == 0)
+                self.assertTrue(len(answer) == 6)
+                self.assertTrue(graph.validate(answer) == 0)
         self.assertSetEqual(probes_right, set([3, 4, 5]))
-        for i in range(100):
+        for i in range(20*R):
             perform_probe(algorithm, graph)
             answer = algorithm.answer()
-            self.assertTrue(len(answer) == 5)
-            self.assertTrue(graph.validate(algorithm.answer()) == 0)
+            self.assertTrue(len(answer) == 6)
+            self.assertTrue(graph.validate(answer) == 0)
+        
+        graph.adjacency_list[3].remove(1)
+        graph.adjacency_list[1].remove(3)
+        for i in range(2*R - 1):
+            perform_probe(algorithm, graph)
+            answer = algorithm.answer()
+            self.assertTrue(len(answer) == 6)
+            self.assertTrue(graph.validate(answer) == 1)
+        for i in range(20*R):
+            perform_probe(algorithm, graph)
+            answer = algorithm.answer()
+            self.assertListEqual(answer, [])
+            self.assertTrue(graph.validate(answer) == 0)
+
 
     def test_one_path_5(self):
         """
@@ -161,7 +176,7 @@ class OnePath(unittest.TestCase):
         probes_right = set()
         for i in range(100):
             v = algorithm.get_probe_input()
-            if i % 6 == 0 or i % 6 == 1 or i % 6 == 1:
+            if i % 6 == 0 or i % 6 == 1 or i % 6 == 2:
                 probes_left.add(v)
             else:
                 probes_right.add(v)
@@ -183,11 +198,11 @@ class OnePath(unittest.TestCase):
         graph.adjacency_list = edges_to_adj_list(edges, n)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
-        for i in range(7):
+        for i in range(2*R - 1):
             perform_probe(algorithm, graph)
             answer = algorithm.answer()
             self.assertListEqual(answer, [])
-            self.assertFalse(graph.validate(answer) == 1)
+            self.assertTrue(graph.validate(answer) == 1)
         for i in range(100):
             perform_probe(algorithm, graph)
             answer = algorithm.answer()
@@ -197,6 +212,7 @@ class OnePath(unittest.TestCase):
     def test_one_path_7(self):
         """
         K_n fully connected graph, start and end vertices are adjacent (corner case).
+        When the edge (start_vertex, end_vertex) is removed, the resulting path, should be 2.
         """
         n = 5
         R = 3
@@ -205,10 +221,24 @@ class OnePath(unittest.TestCase):
         graph.adjacency_list = edges_to_adj_list(edges, n)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
+        for i in range(2*R):
+            perform_probe(algorithm, graph)
+        for i in range(90):
+            perform_probe(algorithm, graph)
+            answer = algorithm.answer()
+            self.assertTrue(len(answer) == 2)
+            self.assertTrue(graph.validate(answer) == 0)
+        graph.adjacency_list[0].remove(4)
+        graph.adjacency_list[4].remove(0)
+        for i in range(2*R - 1):
+            perform_probe(algorithm, graph)
+            answer = algorithm.answer()
+            self.assertTrue(len(answer) == 2)
+            self.assertTrue(graph.validate(answer) == 1)
         for i in range(100):
             perform_probe(algorithm, graph)
             answer = algorithm.answer()
-            self.assertTrue(len(answer) == 1)
+            self.assertTrue(len(answer) == 3)
             self.assertTrue(graph.validate(answer) == 0)
 
 
