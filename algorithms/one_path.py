@@ -2,8 +2,15 @@ import math
 from algorithms.algorithm import Algorithm
 
 """
-During a phase of length 2R, two balls around start and end vertices are grown.
-If these two balls intersect, there is a path between start and end vertices.
+Phase length: 2R.
+
+Steps:
+    Two balls around start and end vertices are grown, each for R steps.
+    Every step outputs the index of unvisited vertex that is closest to center of a currently grown ball.
+    At the last (2R-1)th step, path between start and end vertices is constructed, if intersection of the balls is non-empty.
+
+Output:
+    Last found path (possibly empty) of the last phase.
 """
 class AlgorithmOnePath(Algorithm):
     def __init__(self, c, n):
@@ -63,9 +70,6 @@ class AlgorithmOnePath(Algorithm):
                     curr_vertex = next_vertex
 
             self.phase_position = 0
-        #print("Balls")
-        #print(self.ball_S)
-        #print(self.ball_T)
 
     def answer(self):
         return self.last_path
