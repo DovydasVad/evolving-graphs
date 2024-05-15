@@ -26,7 +26,17 @@ Output:
 """
 class AlgorithmTwoPath(Algorithm):
     def __init__(self, c, n):
-        pass
+        self.R = math.ceil(math.sqrt((c * n)/math.log(n)))
+        self.start_vertex = 0
+        self.end_vertex = n - 1
+        self.primary_path = []
+        self.secondary_path = []
+        self.phase_position = 0
+        self.ball_v1 = []
+        self.ball_v2 = []
+        self.ball_u1 = []
+        self.ball_u2 = []
+
 
     def get_probe_input(self):
         pass
