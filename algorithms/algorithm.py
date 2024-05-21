@@ -1,5 +1,6 @@
 class Algorithm:
     def __init__(self):
+        self.name = ""
         pass
 
     def get_probe_input(self):

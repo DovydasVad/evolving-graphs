@@ -27,6 +27,7 @@ Output:
 """
 class AlgorithmTwoPath(Algorithm):
     def __init__(self, c, n):
+        self.name = "two_path"
         self.R = math.ceil(math.sqrt((c * n)/math.log(n)))
         self.phase_length = 8 * self.R
         self.start_vertex = 0
