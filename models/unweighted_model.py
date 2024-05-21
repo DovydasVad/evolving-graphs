@@ -74,13 +74,19 @@ class UnweightedGraph(Graph):
             2) path != [], and the path between start and end vertices is valid
         """
         if len(path) > 0:
-            if path[0] != self.start_vertex or path[len(path)-1] != self.end_vertex:
+            if path[0] != self.start_vertex:
+                print("Model error: Returned Path does not start with start_vertex!")
+                return -1
+            if path[len(path)-1] != self.end_vertex:
+                print("Model error: Returned Path does not end with end_vertex!")
                 return -1
             path_vertices = set()
             for v in path:
                 if v < 0 or v >= self.n:
+                    print("Model error: Vertex out of range!")
                     return -1
                 if v in path_vertices:
+                    print("Model error: Vertex appears twice!")
                     return -1
                 path_vertices.add(v)
 
