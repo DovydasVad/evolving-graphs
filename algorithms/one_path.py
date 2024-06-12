@@ -20,6 +20,7 @@ class AlgorithmOnePath(Algorithm):
         self.start_vertex = 0
         self.end_vertex = n - 1
         self.last_path = []
+        self.path = []
         self.phase_position = 0
         self.ball_S = []
         self.ball_T = []
@@ -28,7 +29,9 @@ class AlgorithmOnePath(Algorithm):
 
     def get_probe_input(self):
         if self.phase_position == 0:
+            self.path = []
             self.ball_S = [self.start_vertex]
+            self.ball_T = []
             self.curr_ball = self.ball_S
         elif self.phase_position == self.R:
             self.ball_T = [self.end_vertex]
@@ -48,30 +51,44 @@ class AlgorithmOnePath(Algorithm):
                 else:
                     self.parent_T[v] = self.last_probe
 
+        if len(self.path) == 0:
+            ball_intersection = list(set(self.ball_S) & set(self.ball_T))
+            if len(ball_intersection) >= 1:
+                self.path = self.construct_path(ball_intersection[0])
 
         self.phase_position = self.phase_position + 1
         if self.phase_position == 2 * self.R:
-            ball_intersection = list(set(self.ball_S) & set(self.ball_T))
-            if ball_intersection == []:
-                self.last_path = []
-            else:
-                middle_vertex = ball_intersection[0]
-                self.last_path = []
-                curr_vertex = middle_vertex
-                while curr_vertex != self.start_vertex:
-                    next_vertex = self.parent_S[curr_vertex]
-                    self.last_path.append(next_vertex)
-                    curr_vertex = next_vertex
-                self.last_path.reverse()
-                self.last_path.append(middle_vertex)
-                
-                curr_vertex = middle_vertex
-                while curr_vertex != self.end_vertex:
-                    next_vertex = self.parent_T[curr_vertex]
-                    self.last_path.append(next_vertex)
-                    curr_vertex = next_vertex
+            self.last_path = self.path
 
             self.phase_position = 0
 
     def answer(self):
         return self.last_path
+    
+    def construct_path(self, middle_vertex):
+        """
+        Constructs a path between start_vertex and end_vertex through a middle_vertex, which belongs to intersection of two balls around a neighbor of start_vertex and end_vertex.
+        This is done by concatenating to paths:
+            1) path (start_vertex, middle_vertex)
+            2) path (middle_vertex, end_vertex)
+        """
+        path = []
+        # 1) construct path (middle_vertex, start_vertex) by going backwards (through parents) from middle_vertex to start_vertex
+        curr_vertex = middle_vertex
+        while curr_vertex != self.start_vertex:
+            next_vertex = self.parent_S[curr_vertex]
+            path.append(next_vertex)
+            curr_vertex = next_vertex
+        # reverse (middle_vertex, start_vertex) to (start_vertex, middle_vertex)
+        path.reverse()
+        path.append(middle_vertex)
+
+        # 2) construct path (middle_vertex, end_vertex)
+        if middle_vertex != self.end_vertex:
+            curr_vertex = middle_vertex
+            while curr_vertex != self.end_vertex:
+                next_vertex = self.parent_T[curr_vertex]
+                path.append(next_vertex)
+                curr_vertex = next_vertex
+
+        return path
