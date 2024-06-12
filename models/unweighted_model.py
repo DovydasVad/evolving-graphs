@@ -7,12 +7,14 @@ from models.model import Graph
 
 class UnweightedGraph(Graph):
 
-    def init_specific(self, m):
+    def init_specific(self, m, initialize = True):
         self.m = m
         self.adjacency_list = [set() for _ in range(self.n)]
         self.interesting_range_check()
         self.start_vertex = 0
         self.end_vertex = self.n - 1
+        self.edges = ListDict()
+        self.initialize = initialize
 
     def interesting_range_check(self):
         if self.m < self.n * math.log(self.n):
@@ -27,6 +29,8 @@ class UnweightedGraph(Graph):
     Randomly creates m edges. Each edge appears with equal probability m/n.
     """
     def construct_random_graph(self):
+        if not self.initialize:
+            return
         for edge in range(self.m):
             non_edge_found = False
             while not non_edge_found:
@@ -37,19 +41,20 @@ class UnweightedGraph(Graph):
                 non_edge_found = True
                 self.adjacency_list[v].add(v2)
                 self.adjacency_list[v2].add(v)
+                self.edges.add_item((min(v, v2), max(v, v2)))
 
     def probe(self, v):
         return self.adjacency_list[v]
     
     def change(self):
-        edge_found = False
-        v1 = v2 = v3 = v4 = -1
-        while not edge_found:
-            v1 = random.randint(0, self.n-1)
-            v2 = random.randint(0, self.n-1)
-            if v2 in self.adjacency_list[v1]:
-                edge_found = True
+        removed_edge = self.edges.choose_random_item()
+        v1 = removed_edge[0]
+        v2 = removed_edge[1]
+        if v1 not in self.adjacency_list[v2]:
+            return RuntimeError
+        self.edges.remove_item(removed_edge)
         
+        v3 = v4 = -1
         nonedge_found = False
         while not nonedge_found:
             v3 = random.randint(0, self.n-1)
@@ -61,6 +66,7 @@ class UnweightedGraph(Graph):
         self.adjacency_list[v2].remove(v1)
         self.adjacency_list[v3].add(v4)
         self.adjacency_list[v4].add(v3)
+        self.edges.add_item((min(v3, v4), max(v3, v4)))
 
     def validate(self, path):
         """
@@ -75,18 +81,18 @@ class UnweightedGraph(Graph):
         """
         if len(path) > 0:
             if path[0] != self.start_vertex:
-                print("Model error: Returned Path does not start with start_vertex!")
+                print("Algorithm error: Returned Path does not start with start_vertex!")
                 return -1
             if path[len(path)-1] != self.end_vertex:
-                print("Model error: Returned Path does not end with end_vertex!")
+                print("Algorithm error: Returned Path does not end with end_vertex!")
                 return -1
             path_vertices = set()
             for v in path:
                 if v < 0 or v >= self.n:
-                    print("Model error: Vertex out of range!")
+                    print("Algorithm error: Vertex out of range!")
                     return -1
                 if v in path_vertices:
-                    print("Model error: Vertex appears twice!")
+                    print("Algorithm error: Vertex appears twice!")
                     return -1
                 path_vertices.add(v)
 
@@ -106,3 +112,31 @@ class UnweightedGraph(Graph):
                 if path[i+1] not in self.adjacency_list[path[i]]:
                     return 1
         return 0
+    
+    def import_edges(self, edges):
+        for edge in edges:
+            self.adjacency_list[edge[0]].add(edge[1])
+            self.adjacency_list[edge[1]].add(edge[0])
+            self.edges.add_item((min(edge[0], edge[1]), max(edge[0], edge[1])))
+
+# Data structure that supports addition, removal, random selection in constant time
+class ListDict(object):
+    def __init__(self):
+        self.item_to_position = {}
+        self.items = []
+
+    def add_item(self, item):
+        if item in self.item_to_position:
+            return
+        self.items.append(item)
+        self.item_to_position[item] = len(self.items) - 1
+
+    def remove_item(self, item):
+        position = self.item_to_position.pop(item)
+        last_item = self.items.pop()
+        if position != len(self.items):
+            self.items[position] = last_item
+            self.item_to_position[last_item] = position
+
+    def choose_random_item(self):
+        return random.choice(self.items)

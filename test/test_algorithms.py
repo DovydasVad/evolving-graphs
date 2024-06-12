@@ -8,13 +8,6 @@ from algorithms.one_path import AlgorithmOnePath
 from algorithms.two_path import AlgorithmTwoPath
 from models.unweighted_model import UnweightedGraph
 
-def edges_to_adj_list(edges, n):
-    adjacency_list = [set() for _ in range(n)]
-    for edge in edges:
-        adjacency_list[edge[0]].add(edge[1])
-        adjacency_list[edge[1]].add(edge[0])
-    return adjacency_list
-
 def perform_probe(algorithm: Algorithm, graph: UnweightedGraph):
     algorithm.set_probe_result(graph.probe(algorithm.get_probe_input()))
 
@@ -40,8 +33,8 @@ class OnePath(unittest.TestCase):
         n = 9
         R = 4
         edges = [(0, 1), (0, 3), (1, 3), (0, 4), (2, 4), (2, 6), (6, 5), (6, 8), (5, 8), (7, 8)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         probes_left = set()
@@ -78,8 +71,8 @@ class OnePath(unittest.TestCase):
         n = 9
         R = 15
         edges = [(0, 1), (0, 3), (1, 3), (0, 4), (2, 4), (6, 5), (6, 8), (5, 8), (7, 8)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         for i in range(100):
@@ -108,8 +101,8 @@ class OnePath(unittest.TestCase):
         n = 6
         R = 2
         edges = [(0, 2), (2, 1), (1, 3), (3, 4), (4, 5)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         probes_left = set()
@@ -133,8 +126,8 @@ class OnePath(unittest.TestCase):
         n = 6
         R = 3
         edges = [(0, 2), (2, 1), (1, 3), (3, 4), (4, 5)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         probes_left = set()
@@ -183,8 +176,8 @@ class OnePath(unittest.TestCase):
         n = 10
         R = 3
         edges = [(0, 7), (0, 8), (8, 3), (4, 7), (3, 5), (3, 6), (4, 6), (4, 5), (5, 2), (6, 1), (1, 9), (2, 9)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         probes_left = set()
@@ -209,8 +202,8 @@ class OnePath(unittest.TestCase):
         n = 10
         R = 4
         edges = [(0, 7), (0, 8), (8, 3), (4, 7), (3, 5), (3, 6), (4, 6), (4, 5), (5, 2), (6, 1), (1, 9), (2, 9)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         for i in range(2*R - 1):
@@ -227,13 +220,13 @@ class OnePath(unittest.TestCase):
     def test_one_path_7(self):
         """
         K_n fully connected graph, start and end vertices are adjacent (corner case).
-        When the edge (start_vertex, end_vertex) is removed, the resulting path, should be 2.
+        When the edge (start_vertex, end_vertex) is removed, the length of the resulting path, should be 2.
         """
         n = 5
         R = 3
         edges = [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         for i in range(2*R):
@@ -264,8 +257,8 @@ class OnePath(unittest.TestCase):
         n = 6
         R = 4
         edges = [(0, 1), (0, 2), (0, 4), (0, 5), (1, 2), (1, 3), (1, 5), (2, 3), (2, 4), (2, 5), (3, 5)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmOnePath(1, n)
         algorithm.R = R
         for j in range(3000):
@@ -287,8 +280,8 @@ class TwoPath(unittest.TestCase):
         n = 10
         R = 3
         edges = [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (2, 3), (3, 4), (1, 4), (9, 5), (9, 6), (9, 7), (9, 8), (5, 6), (6, 7), (7, 8), (8, 5), (2, 6), (3, 5), (4, 8), (1, 7)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmTwoPath(1, n)
         algorithm.R = R
         for j in range(20):
@@ -335,8 +328,8 @@ class TwoPath(unittest.TestCase):
         n = 10
         R = 1
         edges = [(0, 1), (0, 3), (1, 2), (3, 4), (2, 6), (2, 8), (4, 6), (4, 8), (6, 5), (8, 7), (5, 9), (7, 9)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmTwoPath(1, n)
         algorithm.R = R
         for j in range(10):
@@ -353,8 +346,8 @@ class TwoPath(unittest.TestCase):
         n = 10
         R = 2
         edges = [(0, 1), (0, 3), (1, 2), (3, 4), (2, 6), (2, 8), (4, 6), (4, 8), (6, 5), (8, 7), (5, 9), (7, 9)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmTwoPath(1, n)
         algorithm.R = R
         for i in range(8*R):
@@ -381,8 +374,8 @@ class TwoPath(unittest.TestCase):
         n = 10
         R = 5
         edges = [(0, 1), (1, 2), (2, 6), (6, 7), (7, 9), (0, 3), (3, 4), (4, 8), (8, 5), (5, 9)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmTwoPath(1, n)
         algorithm.R = R
         for j in range(10):
@@ -410,8 +403,8 @@ class TwoPath(unittest.TestCase):
         n = 10
         R = 5
         edges = [(0, 1), (1, 2), (2, 6), (6, 7), (7, 9), (0, 3), (3, 4), (4, 8), (8, 5), (5, 9)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmTwoPath(1, n)
         algorithm.R = R
         for j in range(10):
@@ -449,8 +442,8 @@ class TwoPath(unittest.TestCase):
         n = 5
         R = 1
         edges = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmTwoPath(1, n)
         algorithm.R = R
         for i in range(8*R):
@@ -470,8 +463,8 @@ class TwoPath(unittest.TestCase):
         n = 6
         R = 2
         edges = [(0, 1), (0, 2), (0, 4), (0, 5), (1, 2), (1, 3), (1, 5), (2, 3), (2, 4), (2, 5), (3, 5)]
-        graph = UnweightedGraph(0, n, len(edges))
-        graph.adjacency_list = edges_to_adj_list(edges, n)
+        graph = UnweightedGraph(0, n, len(edges), False)
+        graph.import_edges(edges)
         algorithm = AlgorithmTwoPath(1, n)
         algorithm.R = R
         secondary_correct_count = 0

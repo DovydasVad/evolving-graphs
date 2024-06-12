@@ -201,7 +201,10 @@ class TestChange(unittest.TestCase):
                 if initial_adjacency_matrix[v][v2] >= 1:
                     self.assertTrue(v in adjacency_list[v2])
                     self.assertTrue(v2 in adjacency_list[v])
-        graph = UnweightedGraph(0, n, 8)
+        graph = UnweightedGraph(0, n, 8, False)
+        for v in range(n):
+            for v2 in adjacency_list[v]:
+                graph.edges.add_item((min(v, v2), max(v, v2)))
         graph.adjacency_list = adjacency_list
         iterations = 100000
         changes_left = n*n - n
