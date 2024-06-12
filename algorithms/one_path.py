@@ -55,6 +55,10 @@ class AlgorithmOnePath(Algorithm):
             ball_intersection = list(set(self.ball_S) & set(self.ball_T))
             if len(ball_intersection) >= 1:
                 self.path = self.construct_path(ball_intersection[0])
+            elif self.end_vertex in self.ball_S:
+                self.path = self.construct_path(self.end_vertex)
+            elif self.start_vertex in self.ball_T:
+                self.path = self.construct_path(self.start_vertex)
 
         self.phase_position = self.phase_position + 1
         if self.phase_position == 2 * self.R:
