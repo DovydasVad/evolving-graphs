@@ -7,7 +7,7 @@ Multiple iterations are performed, in a single iteration:
     4) model makes change_rate changes
 
 Calling example:
-python3 runExperiment.py --alg=one --n=1000 --m=15000 --c0=0.5 --iterations=10000 --change=1 --probe=1 --rand_seed=0
+python3 run_experiment.py --alg=one --n=1000 --m=15000 --c0=0.5 --iterations=10000 --change=1 --probe=1 --rand_seed=0
 """
 
 import argparse
@@ -28,6 +28,7 @@ def parse_args():
     parser.add_argument('--probe', dest = 'probe_rate', type = int, default = 1, help = 'Number of probes that the algorithm is allowed to make at once (default = 1)')
     parser.add_argument('--iterations', dest = 'iterations', type = int, required = True, help = 'Number of iterations performed')
     parser.add_argument('--rand_seed', dest = 'rand_seed', type = int, default = 0, help = 'Random seed used for reproducibility (default = 0)')
+    parser.add_argument('--visualization', dest = 'visualization_step', type = int, default = -1, help = 'every <visualization_step> iterations, prints a character indicating the validity of answer provided by the algorithm (default = -1 (not active))')
     return parser.parse_args()
 
 args = parse_args()
@@ -35,6 +36,17 @@ args = parse_args()
 def print_alg_info(algorithm: Algorithm):
     print("--- {} algorithm ---".format(algorithm.name))
     print('R = {}, phase length = {}'.format(algorithm.R, algorithm.phase_length))
+
+def visualize_result(algorithm: Algorithm, answer_correct: bool):
+    print_char = '.'
+    if answer_correct:
+        if hasattr(algorithm, 'primary_valid') and not algorithm.primary_valid:
+            print_char = '_'
+    else:
+        print_char = 'F'
+        if hasattr(algorithm, 'primary_valid') and not algorithm.primary_valid:
+            print_char = 'S'
+    print(print_char, end = "")
 
 if args.alg.startswith("one"):
     algorithm = AlgorithmOnePath(args.c0, args.n)
@@ -47,7 +59,7 @@ graph = UnweightedGraph(args.rand_seed, args.n, args.m)
 
 correct_answers = 0
 correct_answers_after_1st_phase = 0
-for i in range(args.iterations):
+for iteration in range(args.iterations):
     # perform probes
     for j in range(args.probe_rate):
         v = algorithm.get_probe_input()
@@ -55,10 +67,13 @@ for i in range(args.iterations):
 
     # get and validate answers from models
     answer = algorithm.answer()
-    if graph.validate(answer) == 0:
+    answer_correct = (graph.validate(answer) == 0)
+    if answer_correct:
         correct_answers += 1
-        if i >= algorithm.phase_length:
+        if iteration >= algorithm.phase_length:
             correct_answers_after_1st_phase += 1
+    if args.visualization_step != -1 and iteration % args.visualization_step == 0:
+        visualize_result(algorithm, answer_correct)
     
     # perform changes in the model
     for j in range(args.change_rate):
