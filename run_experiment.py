@@ -17,6 +17,7 @@ from models.unweighted_model import UnweightedGraph
 from algorithms.algorithm import Algorithm
 from algorithms.one_path import AlgorithmOnePath
 from algorithms.two_path import AlgorithmTwoPath
+from runner import Runner
 
 def parse_args():
     parser = argparse.ArgumentParser(description = 'Run the experiments: interaction between changing model and the algorithm.')
@@ -37,17 +38,6 @@ def print_alg_info(algorithm: Algorithm):
     print("--- {} algorithm ---".format(algorithm.name))
     print('R = {}, phase length = {}'.format(algorithm.R, algorithm.phase_length))
 
-def visualize_result(algorithm: Algorithm, answer_correct: bool):
-    print_char = '.'
-    if answer_correct:
-        if hasattr(algorithm, 'primary_valid') and not algorithm.primary_valid:
-            print_char = '_'
-    else:
-        print_char = 'F'
-        if hasattr(algorithm, 'primary_valid') and not algorithm.primary_valid:
-            print_char = 'S'
-    print(print_char, end = "")
-
 if args.alg.startswith("one"):
     algorithm = AlgorithmOnePath(args.c0, args.n)
     print_alg_info(algorithm)
@@ -57,28 +47,9 @@ if args.alg.startswith("two"):
 
 graph = UnweightedGraph(args.rand_seed, args.n, args.m)
 
-correct_answers = 0
-correct_answers_after_1st_phase = 0
-for iteration in range(args.iterations):
-    # perform probes
-    for j in range(args.probe_rate):
-        v = algorithm.get_probe_input()
-        algorithm.set_probe_result(graph.probe(v))
-
-    # get and validate answers from models
-    answer = algorithm.answer()
-    answer_correct = (graph.validate(answer) == 0)
-    if answer_correct:
-        correct_answers += 1
-        if iteration >= algorithm.phase_length:
-            correct_answers_after_1st_phase += 1
-    if args.visualization_step != -1 and iteration % args.visualization_step == 0:
-        visualize_result(algorithm, answer_correct)
-    
-    # perform changes in the model
-    for j in range(args.change_rate):
-        graph.change()
+runner = Runner(args.probe_rate, args.change_rate, algorithm, graph)
+runner.run(args.iterations, args.visualization_step)
 
 print()
-print("Correct answers: " + str(correct_answers) + "/" + str(args.iterations) + " (" + str(round(100*correct_answers/args.iterations, 2)) + "%)")
-print("Correct answers (without first phase): " + str(correct_answers_after_1st_phase) + "/" + str(args.iterations - algorithm.phase_length) + " (" + str(round(100*correct_answers_after_1st_phase/(args.iterations - algorithm.phase_length), 2)) + "%)")
+print("Correct answers: {}/{} ({}%)".format(runner.get_correct_answers(), runner.get_total_iterations(), round(100*runner.get_correct_answers()/runner.get_total_iterations(), 2)))
+print("Correct answers (without first phase): {}/{} ({}%)".format(runner.get_correct_answers_after_1st_phase(), runner.get_total_iterations() - algorithm.phase_length, round(100*runner.get_correct_answers_after_1st_phase()/(runner.get_total_iterations() - algorithm.phase_length), 2)))
