@@ -47,6 +47,11 @@ class UnweightedGraph(Graph):
         return self.adjacency_list[v]
     
     def change(self):
+        action = random.randint(0, 0)
+        if action == 0:
+            self.change_swap_edge()
+    
+    def change_swap_edge(self):
         removed_edge = self.edges.choose_random_item()
         v1 = removed_edge[0]
         v2 = removed_edge[1]
