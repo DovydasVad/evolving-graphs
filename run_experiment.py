@@ -14,6 +14,9 @@ import argparse
 import math
 
 from models.unweighted_model import UnweightedGraph
+from models.unweighted_model_e import UnweightedGraphE
+from models.unweighted_model_v import UnweightedGraphV
+from models.unweighted_model_ev import UnweightedGraphEV
 from algorithms.algorithm import Algorithm
 from algorithms.one_path import AlgorithmOnePath
 from algorithms.two_path import AlgorithmTwoPath
@@ -28,6 +31,7 @@ def parse_args():
     parser.add_argument('--change', dest = 'change_rate', type = int, default = 1, help = 'Number of changes that graph makes at once (default = 1)')
     parser.add_argument('--probe', dest = 'probe_rate', type = int, default = 1, help = 'Number of probes that the algorithm is allowed to make at once (default = 1)')
     parser.add_argument('--iterations', dest = 'iterations', type = int, required = True, help = 'Number of iterations performed')
+    parser.add_argument('--model', dest = 'model', type = str, default = "", help = "Configuration of the model ('e' and 'v' include edge and vertex removals, respectively)")
     parser.add_argument('--rand_seed', dest = 'rand_seed', type = int, default = 0, help = 'Random seed used for reproducibility (default = 0)')
     parser.add_argument('--visualization', dest = 'visualization_step', type = int, default = -1, help = 'every <visualization_step> iterations, prints a character indicating the validity of answer provided by the algorithm (default = -1 (not active))')
     return parser.parse_args()
@@ -45,10 +49,20 @@ if args.alg.startswith("two"):
     algorithm = AlgorithmTwoPath(args.c0, args.n)
     print_alg_info(algorithm)
 
-graph = UnweightedGraph(args.rand_seed, args.n, args.m)
+if "e" in args.model and "v" in args.model:
+    graph = UnweightedGraphEV(args.rand_seed, args.n, args.m)
+elif "e" in args.model:
+    graph = UnweightedGraphE(args.rand_seed, args.n, args.m)
+elif "v" in args.model:
+    graph = UnweightedGraphV(args.rand_seed, args.n, args.m)
+else:
+    graph = UnweightedGraph(args.rand_seed, args.n, args.m)
 
 runner = Runner(args.probe_rate, args.change_rate, algorithm, graph)
 runner.run(args.iterations, args.visualization_step)
+
+print()
+print("at the end of execution, m = {}, n = {}".format(graph.m, graph.n))
 
 print()
 print("Correct answers: {}/{} ({}%)".format(runner.get_correct_answers(), runner.get_total_iterations(), round(100*runner.get_correct_answers()/runner.get_total_iterations(), 2)))
