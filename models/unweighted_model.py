@@ -120,8 +120,10 @@ class UnweightedGraph(Graph):
     
     def import_edges(self, edges):
         for edge in edges:
-            self.adjacency_list[edge[0]].add(edge[1])
-            self.adjacency_list[edge[1]].add(edge[0])
+            if edge[1] not in self.adjacency_list[edge[0]]:
+                self.adjacency_list[edge[0]].add(edge[1])
+            if edge[0] not in self.adjacency_list[edge[1]]:
+                self.adjacency_list[edge[1]].add(edge[0])
             self.edges.add_item((min(edge[0], edge[1]), max(edge[0], edge[1])))
 
 # Data structure that supports addition, removal, random selection in constant time
