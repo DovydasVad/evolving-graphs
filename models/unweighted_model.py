@@ -120,7 +120,25 @@ class UnweightedGraph(Graph):
         return 0
     
     def import_edges(self, edges):
+        for edge in self.edges.items:
+            self.adjacency_list[edge[0]].remove(edge[1])
+            if edge[0] != edge[1]:
+                self.adjacency_list[edge[1]].remove(edge[0])
+        self.edges = ListDict()
         for edge in edges:
+            if edge[1] not in self.adjacency_list[edge[0]]:
+                self.adjacency_list[edge[0]].add(edge[1])
+            if edge[0] not in self.adjacency_list[edge[1]]:
+                self.adjacency_list[edge[1]].add(edge[0])
+            self.edges.add_item((min(edge[0], edge[1]), max(edge[0], edge[1])))
+
+    def update_edges(self, new_edges, removed_edges):
+        for edge in removed_edges:
+            self.adjacency_list[edge[0]].remove(edge[1])
+            self.edges.remove_item((min(edge[0], edge[1]), max(edge[0], edge[1])))
+            if edge[0] != edge[1]:
+                self.adjacency_list[edge[1]].remove(edge[0])
+        for edge in new_edges:
             if edge[1] not in self.adjacency_list[edge[0]]:
                 self.adjacency_list[edge[0]].add(edge[1])
             if edge[0] not in self.adjacency_list[edge[1]]:
