@@ -11,3 +11,9 @@ class Algorithm:
 
     def answer(self):
         pass
+
+    def set_start_vertex(self, v):
+        self.start_vertex = v
+    
+    def set_end_vertex(self, v):
+        self.end_vertex = v
