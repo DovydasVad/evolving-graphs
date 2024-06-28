@@ -24,6 +24,10 @@ class Runner:
         self.graph = graph
         self.use_dataset = use_dataset
         self.dataset = dataset
+        self.count_correct_empty = 0
+        self.count_correct_path = 0
+        self.count_incorrect_empty = 0
+        self.count_incorrect_path = 0
         if use_dataset:
             algorithm.set_start_vertex(dataset["start_vertex"])
             algorithm.set_end_vertex(dataset["end_vertex"])
@@ -45,6 +49,15 @@ class Runner:
                 self.correct_answers += 1
                 if iteration >= self.algorithm.phase_length:
                     self.correct_answers_after_1st_phase += 1
+                if answer == []:
+                    self.count_correct_empty += 1
+                else:
+                    self.count_correct_path += 1
+            else:
+                if answer == []:
+                    self.count_incorrect_empty += 1
+                else:
+                    self.count_incorrect_path += 1
             if visualization_step != -1 and iteration % visualization_step == 0:
                 visualize_result(self.algorithm, answer_correct)
             
@@ -66,3 +79,15 @@ class Runner:
     
     def get_correct_answers_after_1st_phase(self):
         return self.correct_answers_after_1st_phase
+    
+    def get_count_correct_empty(self):
+        return self.count_correct_empty
+    
+    def get_count_correct_path(self):
+        return self.count_correct_path
+    
+    def get_count_incorrect_empty(self):
+        return self.count_incorrect_empty
+    
+    def get_count_incorrect_path(self):
+        return self.count_incorrect_path
