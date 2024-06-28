@@ -11,12 +11,13 @@ class UnweightedGraphV(Graph):
         self.m = m
         self.initial_n = self.n
         self.adjacency_list = [set() for _ in range(self.n)]
-        self.interesting_range_check()
+        if initialize:
+            self.interesting_range_check()
         self.start_vertex = 0
         self.end_vertex = self.n - 1
         self.edges = ListDict()
         self.initialize = initialize
-        self.active_vertices = [i for i in range(1, self.n - 1)]
+        self.active_vertices = [i for i in range(0, self.n)]
         self.active_vertices = set(self.active_vertices)
 
 
@@ -54,14 +55,18 @@ class UnweightedGraphV(Graph):
     
     def change(self):
         possible_actions = ["swap-edge"]
-        # vertex removal is only allowed if the interesting range of parameters would be retained
-        for i in range(10):
-            v_id = random.randint(0, self.initial_n - 1)
-            if v_id not in self.active_vertices:
-                continue
-            if self.interesting_range_check(m_subtraction = len(self.adjacency_list[v_id]), n_subtraction = 1) == 0:
-                possible_actions.append("remove-vertex")
-                break
+        # vertex removal is only allowed if
+        # 1) the interesting range of parameters would be retained, 
+        # 2) at least one non-edge would still exist (corner case for small n) 
+        # 3) current vertex count >= 0.1 * original vertex count
+        if self.n >= 0.1 * self.initial_n:
+            for i in range(10):
+                v_id = random.randint(0, self.initial_n - 1)
+                if v_id not in self.active_vertices or v_id == self.start_vertex or v_id == self.end_vertex:
+                    continue
+                if (self.n - 1) * (self.n - 2) / 2 != self.m - len(self.adjacency_list[v_id]) and self.interesting_range_check(m_subtraction = len(self.adjacency_list[v_id]), n_subtraction = 1) == 0:
+                    possible_actions.append("remove-vertex")
+                    break
 
         action = possible_actions[random.randint(0, len(possible_actions) - 1)]
         if action == "swap-edge":
@@ -94,9 +99,10 @@ class UnweightedGraphV(Graph):
     def change_remove_vertex(self):
         vertex_found = False
         while not vertex_found:
-            v_id = random.randint(1, self.initial_n - 2)
-            if v_id in self.active_vertices:
-                vertex_found = True
+            v_id = random.randint(0, self.initial_n - 1)
+            if v_id in self.active_vertices and v_id != self.start_vertex and v_id != self.end_vertex:
+                if (self.n - 1) * (self.n - 2) / 2 != self.m - len(self.adjacency_list[v_id]) and self.interesting_range_check(m_subtraction = len(self.adjacency_list[v_id]), n_subtraction = 1) == 0:
+                    vertex_found = True
         
         self.n = self.n - 1
         self.m = self.m - len(self.adjacency_list[v_id])
@@ -137,14 +143,14 @@ class UnweightedGraphV(Graph):
 
         if len(path) == 0:     # Case 1: path = []
             visited = [0 for i in range(self.initial_n)]
-            visited[0] = 1
-            new_vertices = [0]
+            visited[self.start_vertex] = 1
+            new_vertices = [self.start_vertex]
             for v in new_vertices:
                 for v2 in self.adjacency_list[v]:
                     if visited[v2] == 0:
                         visited[v2] = 1
                         new_vertices.append(v2)
-                        if v2 == self.initial_n - 1:
+                        if v2 == self.end_vertex:
                             return 1
         else:    # Case 2: path != []
             for i in range(0, len(path)-1):
@@ -153,12 +159,20 @@ class UnweightedGraphV(Graph):
         return 0
     
     def import_edges(self, edges):
+        self.adjacency_list = [set() for _ in range(self.n)]
+        self.edges = ListDict()
         for edge in edges:
             if edge[1] not in self.adjacency_list[edge[0]]:
                 self.adjacency_list[edge[0]].add(edge[1])
             if edge[0] not in self.adjacency_list[edge[1]]:
                 self.adjacency_list[edge[1]].add(edge[0])
             self.edges.add_item((min(edge[0], edge[1]), max(edge[0], edge[1])))
+
+    def set_start_vertex(self, v):
+        self.start_vertex = v
+    
+    def set_end_vertex(self, v):
+        self.end_vertex = v
 
 # Data structure that supports addition, removal, random selection in constant time
 class ListDict(object):

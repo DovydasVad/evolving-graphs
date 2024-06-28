@@ -9,8 +9,10 @@ class UnweightedGraphE(Graph):
 
     def init_specific(self, m, initialize = True):
         self.m = m
+        self.initial_n = self.n
         self.adjacency_list = [set() for _ in range(self.n)]
-        self.interesting_range_check()
+        if initialize:
+            self.interesting_range_check()
         self.start_vertex = 0
         self.end_vertex = self.n - 1
         self.edges = ListDict()
@@ -122,15 +124,15 @@ class UnweightedGraphE(Graph):
                 path_vertices.add(v)
 
         if len(path) == 0:     # Case 1: path = []
-            visited = [0 for i in range(self.n)]
-            visited[0] = 1
-            new_vertices = [0]
+            visited = [0 for i in range(self.initial_n)]
+            visited[self.start_vertex] = 1
+            new_vertices = [self.start_vertex]
             for v in new_vertices:
                 for v2 in self.adjacency_list[v]:
                     if visited[v2] == 0:
                         visited[v2] = 1
                         new_vertices.append(v2)
-                        if v2 == self.n - 1:
+                        if v2 == self.end_vertex:
                             return 1
         else:    # Case 2: path != []
             for i in range(0, len(path)-1):
@@ -139,12 +141,20 @@ class UnweightedGraphE(Graph):
         return 0
     
     def import_edges(self, edges):
+        self.adjacency_list = [set() for _ in range(self.n)]
+        self.edges = ListDict()
         for edge in edges:
             if edge[1] not in self.adjacency_list[edge[0]]:
                 self.adjacency_list[edge[0]].add(edge[1])
             if edge[0] not in self.adjacency_list[edge[1]]:
                 self.adjacency_list[edge[1]].add(edge[0])
             self.edges.add_item((min(edge[0], edge[1]), max(edge[0], edge[1])))
+
+    def set_start_vertex(self, v):
+        self.start_vertex = v
+    
+    def set_end_vertex(self, v):
+        self.end_vertex = v
 
 # Data structure that supports addition, removal, random selection in constant time
 class ListDict(object):
