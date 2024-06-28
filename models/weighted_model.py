@@ -1,3 +1,7 @@
+"""
+Was not used in this work.
+"""
+
 import random
 
 from models.model import Graph
