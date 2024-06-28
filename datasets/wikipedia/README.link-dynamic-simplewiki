@@ -1,0 +1,70 @@
+Wikipedia dynamic (simple) network, part of the Koblenz Network Collection
+===========================================================================
+
+This directory contains the TSV and related files of the link-dynamic-simplewiki network: This network shows the evolution of hyperlinks between articles of the Simple English Wikipedia. The nodes represent articles. An edge indicates that a hyperlink was added or removed depending on the edge weight (−1 for removal or +1 for addition).
+
+
+More information about the network is provided here: 
+http://konect.cc/networks/link-dynamic-simplewiki
+
+Files: 
+    meta.link-dynamic-simplewiki -- Metadata about the network 
+    out.link-dynamic-simplewiki -- The adjacency matrix of the network in whitespace-separated values format, with one edge per line
+      The meaning of the columns in out.link-dynamic-simplewiki are: 
+        First column: ID of from node 
+        Second column: ID of to node
+        Third column (if present): weight or multiplicity of edge
+        Fourth column (if present):  timestamp of edges Unix time
+        Third column: edge weight
+        Fourth column: timestamp of the edge
+
+
+Use the following References for citation:
+
+@MISC{konect:2017:link-dynamic-simplewiki,
+    title = {Wikipedia dynamic (simple) network dataset -- {KONECT}},
+    month = oct,
+    year = {2017},
+    url = {http://konect.cc/networks/link-dynamic-simplewiki}
+}
+
+@inproceedings{konect:unlink,
+	title = {Structural Dynamics of Knowledge Networks},
+	author = {Preusse, Julia and Kunegis, Jérôme and Thimm, Matthias and Gottron, Thomas and Staab, Steffen},
+	booktitle = {Proc. Int. Conf. on Weblogs and Soc. Media},
+	year = {2013},
+}
+
+@inproceedings{konect:unlink,
+	title = {Structural Dynamics of Knowledge Networks},
+	author = {Preusse, Julia and Kunegis, Jérôme and Thimm, Matthias and Gottron, Thomas and Staab, Steffen},
+	booktitle = {Proc. Int. Conf. on Weblogs and Soc. Media},
+	year = {2013},
+}
+
+
+@inproceedings{konect,
+	title = {{KONECT} -- {The} {Koblenz} {Network} {Collection}},
+	author = {Jérôme Kunegis},
+	year = {2013},
+	booktitle = {Proc. Int. Conf. on World Wide Web Companion},
+	pages = {1343--1350},
+	url = {http://dl.acm.org/citation.cfm?id=2488173},
+	url_presentation = {https://www.slideshare.net/kunegis/presentationwow},
+	url_web = {http://konect.cc/},
+	url_citations = {https://scholar.google.com/scholar?cites=7174338004474749050},
+}
+
+@inproceedings{konect,
+	title = {{KONECT} -- {The} {Koblenz} {Network} {Collection}},
+	author = {Jérôme Kunegis},
+	year = {2013},
+	booktitle = {Proc. Int. Conf. on World Wide Web Companion},
+	pages = {1343--1350},
+	url = {http://dl.acm.org/citation.cfm?id=2488173},
+	url_presentation = {https://www.slideshare.net/kunegis/presentationwow},
+	url_web = {http://konect.cc/},
+	url_citations = {https://scholar.google.com/scholar?cites=7174338004474749050},
+}
+
+

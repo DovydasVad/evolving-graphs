@@ -1,0 +1,1 @@
+The "moteFiles" directory is downloaded from http://sing.stanford.edu/flu/ (file flu-data.zip)
