@@ -13,8 +13,8 @@ Dovydas Vadišius, VU Amsterdam, 2024
     │   ├── scripts             # Dataset processing scripts
     │   └── wikipedia           # Wikipedia Links dataset files
     ├── experiments
-    │   ├── results
-    │   └── scripts
+    │   ├── results             # Results of the experiments
+    │   └── scripts             # Scripts for running experiments on random graphs and datasets
     ├── models                  # Evolving graph model implementation
     ├── test                    # Unit tests for model and algorithm implementations
     ├── run_experiment.py       # Script running a single experiment
@@ -47,7 +47,7 @@ The respective `to_csv_<script_name>` scripts convert experiment results into `.
 
 Prerequisite: downloading and processing datasets.
 
-1. Downloading datasets. For `contact` dataset, contents of `motefiles\` directory should be downloaded from http://sing.stanford.edu/flu/ (file flu-data.zip). The `wikipedia` dataset is located in http://konect.cc/networks/link-dynamic-simplewiki/.
+1. Downloading datasets. For `contact` dataset, contents of `motefiles/` directory should be downloaded from http://sing.stanford.edu/flu/ (file flu-data.zip). The `wikipedia` dataset is located in http://konect.cc/networks/link-dynamic-simplewiki/.
 
 #### Single Experiment
 
