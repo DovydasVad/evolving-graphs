@@ -5,8 +5,8 @@ import pickle
 import os
 import sys
 
-C0 = [0.02, 0.05, 0.1, 0.2, 0.5, 1, 2]
-PROBE_RATE = [1, 2, 4, 8, 16, 32, 64]
+C0 = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 5]
+PROBE_RATE = [1, 2, 4, 8, 16, 32, 64, 128]
 M_SIZE = 3
 ITERATIONS = 10_000
 
@@ -19,8 +19,10 @@ args = parse_args()
 
 if args.dataset == "wikipedia":
     iterations = 730
+    n = 100312
 elif args.dataset == "contact":
     iterations = 1334
+    n = 789
 else:
     print("Wrong name of the dataset! Use 'contact' or 'wikipedia'.")
     sys.exit()

@@ -3,10 +3,10 @@ import math
 import pickle
 import os
 
-RESULTS_NAME = "bound_results.pkl"
+RESULTS_NAME = "bound_constant.pkl"
 OUTPUT_NAME = "bound_constant"
 C0 = [0.1, 0.2, 0.5, 1, 2]
-N = [100, 1_000, 10_000]
+N = [100, 300, 1_000, 3_000, 10_000]
 M_SIZE = 3
 ITERATIONS = 10_000
 

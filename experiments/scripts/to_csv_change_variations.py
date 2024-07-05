@@ -5,7 +5,7 @@ import os
 
 RESULTS_NAME = "change_variations.pkl"
 OUTPUT_NAME = "change_variations"
-C0 = 0.1
+C0 = 0.5
 N = [100, 300, 1_000, 3_000, 10_000]
 M_SIZE = 3
 ALGORITHMS = ["basic", "e", "v", "ev"]
@@ -13,8 +13,6 @@ ITERATIONS = 10_000
 
 with open(os.path.join("..", "results", RESULTS_NAME), "rb") as fin:
     results = pickle.load(fin)
-
-print(results)
 
 for m_list in range(M_SIZE):
     with open(os.path.join("..", "results", OUTPUT_NAME + "-m" + str(m_list + 1) + ".csv"), 'w', newline='') as fout:
