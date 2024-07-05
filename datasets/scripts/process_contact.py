@@ -6,7 +6,7 @@ import pickle
 from tqdm import tqdm
 
 FILE_DIR = os.path.join("..", "contact", "moteFiles")
-INTERVAL_LENGTH = 3
+INTERVAL_LENGTH = 30
 INTERVAL_DIFFERENCE = 1
 MIN_CONNECTIONS = 10
 NODE_COUNT = 789
@@ -40,10 +40,10 @@ for node in tqdm(range(1, NODE_COUNT + 1)):
 for node in tqdm(range(NODE_COUNT)):
     for sender in connections[node].keys():
         for t in connections[node][sender]:
-            edge = (min(receiver, sender), max(receiver, sender))
+            edge = (min(node, sender), max(node, sender))
             if edge not in edges[t]:
                 edges[t].append(edge)
-                counts[receiver] = (counts[receiver][0] + 1, receiver)
+                counts[node] = (counts[node][0] + 1, node)
                 counts[sender] = (counts[sender][0] + 1, sender)
                 m += 1
 
@@ -63,7 +63,7 @@ for t in range(1, time_steps):
     else:
         evolution_rate = 0
     evolution_rates.append(evolution_rate)
-    print("t = {}, evolution rate = {}".format(t, evolution_rate))
+    print("t = {}, evolution rate = {}, |E| = {}".format(t, evolution_rate, len(edges[t])))
 
 start_vertex = end_vertex = -1
 m_with_higher_deg = 0
@@ -75,13 +75,13 @@ for count in counts:
     if count[0] >= MIN_CONNECTIONS:
         m_with_higher_deg += count[0]
         n_with_higher_deg += 1
-    if ST_threshold_min / 10 <= count[0] <= ST_threshold_max / 10:
+    if ST_threshold_min <= count[0] <= ST_threshold_max:
         if start_vertex == -1:
             start_vertex = id
 
 for count in reversed(counts):
     id = count[1]
-    if ST_threshold_min / 10 <= count[0] <= ST_threshold_max / 10:
+    if ST_threshold_min <= count[0] <= ST_threshold_max:
         if end_vertex == -1:
             end_vertex = id
 
@@ -94,7 +94,7 @@ print("start_vertex: {},  end_vertex = {}".format(start_vertex, end_vertex))
 print("start_vertex connections: {},  end_vertex_connections: {}".format(counts[start_vertex][0], counts[end_vertex][0]))
 
 dataset = dict()
-dataset["start_vertex"] = start_vertex
+dataset["start_vertex"] = 740  # preselected to have a higher likelihood of existence of path between start and end vertices
 dataset["end_vertex"] = end_vertex
 dataset["edges"] = edges
 dataset["new_edges"] = new_edges

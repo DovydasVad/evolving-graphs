@@ -1,3 +1,9 @@
+"""
+Evolving graph basic model implementation.
+
+Allowed change types: edge swap, vertex removal.
+"""
+
 import math
 import random
 import os
@@ -32,10 +38,8 @@ class UnweightedGraphV(Graph):
             return 2
         return 0
 
-    """
-    Randomly creates m edges. Each edge appears with equal probability m/n.
-    """
     def construct_random_graph(self):
+        """ Randomly creates m edges. Each edge has an equal probability to appear in the graph. """
         if not self.initialize:
             return
         for edge in range(self.m):
@@ -51,9 +55,12 @@ class UnweightedGraphV(Graph):
                 self.edges.add_item((min(v, v2), max(v, v2)))
 
     def probe(self, v):
+        """ Vertex probe - returns the list of neighbors of v. """
         return self.adjacency_list[v]
     
     def change(self):
+        """ Picks an allowed model change type. """
+
         possible_actions = ["swap-edge"]
         # vertex removal is only allowed if
         # 1) the interesting range of parameters would be retained, 
@@ -75,6 +82,7 @@ class UnweightedGraphV(Graph):
             self.change_remove_vertex()
     
     def change_swap_edge(self):
+        """ Random edge swap: remove a random edge, and insert an edge between two disconnected vertices. """
         removed_edge = self.edges.choose_random_item()
         v1 = removed_edge[0]
         v2 = removed_edge[1]
@@ -85,8 +93,8 @@ class UnweightedGraphV(Graph):
         v3 = v4 = -1
         nonedge_found = False
         while not nonedge_found:
-            v3 = random.randint(0, self.initial_n-1)
-            v4 = random.randint(0, self.initial_n-1)
+            v3 = random.randint(0, self.initial_n - 1)
+            v4 = random.randint(0, self.initial_n - 1)
             if v3 in self.active_vertices and v4 in self.active_vertices and v4 not in self.adjacency_list[v3] and v3 != v4:
                 nonedge_found = True
         
@@ -97,6 +105,7 @@ class UnweightedGraphV(Graph):
         self.edges.add_item((min(v3, v4), max(v3, v4)))
 
     def change_remove_vertex(self):
+        """ Random vertex removal. """
         vertex_found = False
         while not vertex_found:
             v_id = random.randint(0, self.initial_n - 1)

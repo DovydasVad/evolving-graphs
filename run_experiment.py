@@ -6,7 +6,7 @@ Multiple iterations are performed, in a single iteration:
     3) model validates the answer
     4) model makes change_rate changes
 
-Calling example for ER graphs:
+Calling example for random graphs:
 python3 run_experiment.py --alg=one --n=1000 --m=15000 --c0=0.5 --iterations=10000 --change=1 --probe=1 --rand_seed=0 --model=basic
 
 Calling example for dataset:
@@ -14,7 +14,6 @@ python3 run_experiment.py --alg=one --c0=0.5 --change=1 --probe=5 --dataset=wiki
 """
 
 import argparse
-import math
 import os
 import pickle
 

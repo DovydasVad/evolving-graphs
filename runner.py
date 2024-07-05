@@ -1,3 +1,7 @@
+"""
+Performs an experiment by performing interactions between algorithm and the model.
+"""
+
 from tqdm import tqdm
 from algorithms.algorithm import Algorithm
 
@@ -70,6 +74,10 @@ class Runner:
             else:
                 for j in range(self.change_rate):
                     self.graph.change()
+        print("correct path: {}".format(self.count_correct_path))
+        print("correct empty: {}".format(self.count_correct_empty))
+        print("incorrect path: {}".format(self.count_incorrect_path))
+        print("incorrect empty: {}".format(self.count_incorrect_empty))
     
     def get_total_iterations(self):
         return self.total_iterations

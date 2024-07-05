@@ -108,7 +108,7 @@ print("Thresholds: {} and {}".format(ST_threshold_min, ST_threshold_max))
 print("Number of vertices: {}".format(max_vertex))
 print("Timestamps: from  {}  to  {}".format(time_start, time_end))
 print("Number of time steps: {}".format(time_steps))
-print("Evolution rates: 5th percentile: {}, 95th percentile: {}".format(round(np.percentile(evolution_rates, 5), 5), round(np.percentile(evolution_rates, 95), 5)))
+print("Evolution rates: 5th, 20th percentiles: {}, {}, 95th percentile: {}".format(round(np.percentile(evolution_rates, 5), 5), round(np.percentile(evolution_rates, 20), 5), round(np.percentile(evolution_rates, 95), 5)))
 print("start_vertex: {},  end_vertex = {}".format(start_vertex, end_vertex))
 print("start_vertex connections: {},  end_vertex_connections: {}".format(counts[start_vertex][0], counts[end_vertex][0]))
 
