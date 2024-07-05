@@ -67,6 +67,7 @@ class AlgorithmOnePath(Algorithm):
             self.phase_position = 0
 
     def answer(self):
+        """ Output answer for the ST-path connectivity problem. """
         return self.last_path
     
     def construct_path(self, middle_vertex):

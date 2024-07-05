@@ -184,6 +184,7 @@ class AlgorithmTwoPath(Algorithm):
             self.phase_position = 0
 
     def answer(self):
+        """ Output answer for the ST-path connectivity problem. """
         if self.primary_valid:
             return self.last_primary_path
         else:
