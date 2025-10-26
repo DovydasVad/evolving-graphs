@@ -45,9 +45,7 @@ The respective `to_csv_<script_name>` scripts convert experiment results into `.
 
 ### Datasets
 
-Prerequisite: downloading and processing datasets.
-
-1. Downloading datasets. For `contact` dataset, contents of `motefiles/` directory should be downloaded from http://sing.stanford.edu/flu/ (file flu-data.zip). The `wikipedia` dataset is located in http://konect.cc/networks/link-dynamic-simplewiki/.
+Prerequisite: downloading and processing datasets. For `contact` dataset, contents of `motefiles/` directory should be downloaded from http://sing.stanford.edu/flu/ (file flu-data.zip). The `wikipedia` dataset is located in http://konect.cc/networks/link-dynamic-simplewiki/.
 
 #### Single Experiment
 
@@ -59,8 +57,6 @@ Calling example for running a dataset:
 
 #### Multiple Experiments
 
-For experiments on various constant `c0` values and probe rates, run `run_dataset.py` script.
+For experiments on various constant `c0` values and probe rates, run `run_dataset.py` script. The parameters can be adjusted in the script header.
 
-The parameters can be adjusted in the script header.
-
-The `to_csv_dataset.py` script converts experiment results into `.csv` file format.
+`to_csv_dataset.py` script converts experiment results into `.csv` file format.
